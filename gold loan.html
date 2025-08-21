@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gold Loan Charges Calculator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  label, select, input, button {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    font-size: 16px;
+  }
+  button {
+    margin-top: 20px;
+    padding: 10px;
+    font-weight: bold;
+  }
+  .result {
+    margin-top: 24px;
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Gold Loan Charges Calculator</h2>
+
+<label for="loanType">Gold Loan Type:</label>
+<select id="loanType">
+  <option value="agriculture">Agriculture</option>
+  <option value="nonAgriculture">Non-Agriculture</option>
+</select>
+
+<label for="loanAmount">Loan Amount (₹):</label>
+<input type="number" id="loanAmount" min="1" placeholder="Enter loan amount" />
+
+<button onclick="calculateCharges()">Calculate Charges</button>
+
+<div class="result" id="results" style="display:none;">
+  <p id="processingCharges"></p>
+  <p id="appraiserCharges"></p>
+  <p id="safeCustodyCharges"></p>
+  <p id="totalCharges" style="font-weight:bold;"></p>
+</div>
+
+<script>
+function calculateCharges() {
+  const loanType = document.getElementById('loanType').value;
+  const amount = parseFloat(document.getElementById('loanAmount').value);
+  const GST = 0.18;
+
+  if (isNaN(amount) || amount <= 0) {
+    alert('Please enter a valid positive loan amount.');
+    return;
+  }
+
+  let processingCharge = 0;
+  // Processing charges - Agriculture
+  if (loanType === 'agriculture') {
+    if (amount <= 50000) {
+      processingCharge = 0;
+    } else if (amount <= 300000) {
+      processingCharge = Math.min(amount * 0.004, 500);
+    } else if (amount <= 1000000) {
+      processingCharge = Math.min(amount * 0.004, 1000);
+    } else {
+      processingCharge = 1200;
+    }
+  } else {
+    // Processing charges - Non-Agriculture
+    if (amount <= 50000) {
+      processingCharge = 0;
+    } else if (amount <= 500000) {
+      processingCharge = Math.min(amount * 0.004, 2000);
+    } else {
+      processingCharge = Math.min(amount * 0.004, 2500);
+    }
+  }
+
+  processingCharge = processingCharge * (1 + GST);
+
+  let appraiserCharge = 0;
+  // Jewel appraiser charges (same for both loan types)
+  if (amount <= 100000) {
+    appraiserCharge = Math.min(amount * 0.0035, 350);
+  } else if (amount <= 200000) {
+    appraiserCharge = Math.min(amount * 0.0035, 400);
+  } else if (amount <= 1000000) {
+    appraiserCharge = 500;
+  } else {
+    appraiserCharge = 700;
+  }
+  appraiserCharge = appraiserCharge * (1 + GST);
+
+  // Safe custody charges
+  let safeCustodyCharge = 0;
+  if (amount <= 200000) {
+    safeCustodyCharge = 100;
+  } else {
+    safeCustodyCharge = 200;
+  }
+  safeCustodyCharge = safeCustodyCharge * (1 + GST);
+
+  const totalCharges = processingCharge + appraiserCharge + safeCustodyCharge;
+
+  document.getElementById('processingCharges').textContent = 'Processing Charges: ₹' + processingCharge.toFixed(2);
+  document.getElementById('appraiserCharges').textContent = 'Appraiser Charges: ₹' + appraiserCharge.toFixed(2);
+  document.getElementById('safeCustodyCharges').textContent = 'Safe Custody Charges: ₹' + safeCustodyCharge.toFixed(2);
+  document.getElementById('totalCharges').textContent = 'Total Charges: ₹' + totalCharges.toFixed(2);
+
+  document.getElementById('results').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
